@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+
+  <nav class="bg-blue-500 p-4">
+    <div class="container mx-auto flex justify-between">
+      <div class="text-white font-bold text-lg">Profile Page</div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto mt-8">
+    <h1 class="text-3xl font-bold mb-4">Question Ideas</h1>
+    <button class="bg-green-500 text-white px-4 py-2 rounded mb-4" id="add-question">+</button>
+
+    <div class="mb-4">
+      <button class="bg-blue-500 text-white px-4 py-2 rounded" id="sort-rating">Sort by Rating</button>
+      <button class="bg-blue-500 text-white px-4 py-2 rounded ml-2" id="sort-topic">Sort by Topic</button>
+    </div>
+
+    <!-- Question Input and Tags -->
+    <div id="question-container">
+      <% questions.forEach(question => { %>
+        <div class="mb-4 p-4 bg-white rounded shadow-md question-item">
+          <input type="text" class="w-full px-4 py-2 border rounded mb-2 question-text" value="<%= question.text %>" readonly>
+          <div class="flex space-x-2">
+            <input type="number" class="w-1/4 px-4 py-2 border rounded question-rating" value="<%= question.rating %>" readonly>
+            <input type="text" class="w-3/4 px-4 py-2 border rounded question-topic" value="<%= question.topic %>" readonly>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- Form to add new question -->
+    <form id="question-form" action="/add-question" method="POST">
+      <div class="mb-4 p-4 bg-white rounded shadow-md question-item">
+        <input type="text" name="text" class="w-full px-4 py-2 border rounded mb-2 question-text" placeholder="Enter your question idea">
+        <div class="flex space-x-2">
+          <input type="number" name="rating" class="w-1/4 px-4 py-2 border rounded question-rating" placeholder="Rating (numeric)">
+          <input type="text" name="topic" class="w-3/4 px-4 py-2 border rounded question-topic" placeholder="Topic (string)">
+        </div>
+      </div>
+      <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded mb-4">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    // JavaScript for adding more question 
+    document.getElementById('add-question').addEventListener('click', function() {
+      const questionContainer = document.getElementById('question-container');
+      const newQuestion = document.createElement('div');
+      newQuestion.classList.add('mb-4', 'p-4', 'bg-white', 'rounded', 'shadow-md', 'question-item');
+      newQuestion.innerHTML = `
+        <input type="text" name="text" class="w-full px-4 py-2 border rounded mb-2 question-text" placeholder="Enter your question idea">
+        <div class="flex space-x-2">
+          <input type="number" name="rating" class="w-1/4 px-4 py-2 border rounded question-rating" placeholder="Rating (numeric)">
+          <input type="text" name="topic" class="w-3/4 px-4 py-2 border rounded question-topic" placeholder="Topic (string)">
+        </div>
+      `;
+      questionContainer.appendChild(newQuestion);
+    });
+
+    // Function to sort by rating
+    document.getElementById('sort-rating').addEventListener('click', function() {
+      const questionContainer = document.getElementById('question-container');
+      const questions = Array.from(questionContainer.getElementsByClassName('question-item'));
+
+      questions.sort((a, b) => {
+        const ratingA = parseInt(a.querySelector('.question-rating').value) || 0;
+        const ratingB = parseInt(b.querySelector('.question-rating').value) || 0;
+        return ratingA - ratingB;
+      });
+
+      questionContainer.innerHTML = '';
+      questions.forEach(question => questionContainer.appendChild(question));
+    });
+
+    // Function to sort by topic
+    document.getElementById('sort-topic').addEventListener('click', function() {
+      const questionContainer = document.getElementById('question-container');
+      const questions = Array.from(questionContainer.getElementsByClassName('question-item'));
+
+      questions.sort((a, b) => {
+        const topicA = a.querySelector('.question-topic').value.toLowerCase();
+        const topicB = b.querySelector('.question-topic').value.toLowerCase();
+        return topicA.localeCompare(topicB);
+      });
+
+      questionContainer.innerHTML = '';
+      questions.forEach(question => questionContainer.appendChild(question));
+    });
+  </script>
+</body>
+</html>
